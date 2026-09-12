@@ -1,11 +1,14 @@
-const CACHE_NAME = 'zamanatnameh-v1';
+const CACHE_NAME = 'zamanatnameh-v2';
 const ASSETS = [
   './',
   './index.html',
   './manifest.json',
   './icon-192.png',
+  './icon-192-maskable.png',
   './icon-512.png',
-  './apple-touch-icon.png'
+  './icon-512-maskable.png',
+  './apple-touch-icon.png',
+  './mark-96.png'
 ];
 
 self.addEventListener('install', (event) => {
