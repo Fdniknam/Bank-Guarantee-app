@@ -1,0 +1,450 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, maximum-scale=1">
+<title>محاسبه‌گر ضمانتنامه</title>
+<meta name="description" content="ابزار محاسبه کارمزد، وثیقه و سپرده نقدی ضمانتنامه بانکی">
+<meta name="theme-color" content="#10233B">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="ضمانتنامه">
+<link rel="manifest" href="manifest.json">
+<link rel="apple-touch-icon" href="apple-touch-icon.png">
+<link rel="icon" href="icon-192.png">
+<link rel="preconnect" href="https://cdn.jsdelivr.net">
+<link href="https://cdn.jsdelivr.net/gh/rastikerdar/vazirmatn@v33.003/Vazirmatn-font-face.css" rel="stylesheet">
+<style>
+  :root{
+    --ink:#10233B;
+    --ink-2:#1C3A5E;
+    --ink-3:#284d78;
+    --paper:#F7F5F1;
+    --paper-2:#EFEBE2;
+    --gold:#C89B3C;
+    --gold-dark:#A37A28;
+    --line:#D9D2C2;
+    --good:#2F7D5D;
+    --ink-soft:rgba(16,35,59,0.62);
+  }
+  *{box-sizing:border-box;}
+  html,body{margin:0;padding:0;}
+  body{
+    background:var(--ink);
+    background-image:
+      radial-gradient(1200px 500px at 90% -10%, rgba(200,155,60,0.16), transparent 60%),
+      radial-gradient(900px 500px at -10% 110%, rgba(40,77,120,0.35), transparent 55%);
+    font-family:"Vazirmatn", "Tahoma", sans-serif;
+    color:var(--ink);
+    min-height:100vh;
+    -webkit-font-smoothing:antialiased;
+  }
+  .wrap{
+    max-width:480px;
+    margin:0 auto;
+    min-height:100vh;
+    padding:env(safe-area-inset-top) 0 calc(28px + env(safe-area-inset-bottom));
+    display:flex;
+    flex-direction:column;
+  }
+  header.top{
+    padding:22px 20px 18px;
+    color:var(--paper);
+  }
+  .brand{
+    display:flex;
+    align-items:center;
+    gap:12px;
+  }
+  .seal{
+    width:40px;height:40px;flex:0 0 auto;
+    border-radius:11px;
+    background:linear-gradient(160deg, var(--gold), var(--gold-dark));
+    display:flex;align-items:center;justify-content:center;
+    box-shadow:0 2px 10px rgba(0,0,0,0.25);
+  }
+  .seal svg{width:20px;height:20px;}
+  .brand h1{
+    font-size:16px;
+    font-weight:700;
+    margin:0;
+    letter-spacing:0;
+  }
+  .brand p{
+    margin:2px 0 0;
+    font-size:12px;
+    font-weight:400;
+    color:rgba(247,245,241,0.62);
+  }
+
+  main{flex:1; padding:0 16px;}
+
+  .card{
+    background:var(--paper);
+    border-radius:18px;
+    padding:20px 18px;
+    box-shadow:0 20px 40px -20px rgba(0,0,0,0.5);
+  }
+  .card + .card{margin-top:14px;}
+
+  .field{margin-bottom:16px;}
+  .field:last-child{margin-bottom:0;}
+  label{
+    display:block;
+    font-size:12.5px;
+    font-weight:600;
+    color:var(--ink-2);
+    margin-bottom:7px;
+  }
+  .hint{
+    font-size:11px;
+    font-weight:400;
+    color:var(--ink-soft);
+    margin-right:6px;
+  }
+  select, input[type=text], input[type=number]{
+    width:100%;
+    font-family:inherit;
+    font-size:14.5px;
+    font-weight:500;
+    color:var(--ink);
+    background:#fff;
+    border:1.5px solid var(--line);
+    border-radius:11px;
+    padding:12px 14px;
+    outline:none;
+    appearance:none;
+    -webkit-appearance:none;
+    transition:border-color .15s ease, box-shadow .15s ease;
+  }
+  select:focus, input:focus{
+    border-color:var(--gold-dark);
+    box-shadow:0 0 0 3px rgba(200,155,60,0.18);
+  }
+  .select-wrap{position:relative;}
+  .select-wrap::after{
+    content:"";
+    position:absolute;
+    left:14px; top:50%;
+    width:9px;height:9px;
+    border-left:2px solid var(--ink-soft);
+    border-bottom:2px solid var(--ink-soft);
+    transform:translateY(-65%) rotate(-45deg);
+    pointer-events:none;
+  }
+  .amount-wrap{position:relative;}
+  .amount-wrap input{padding-left:52px;}
+  .amount-wrap .suffix{
+    position:absolute; left:14px; top:50%; transform:translateY(-50%);
+    font-size:12.5px; font-weight:600; color:var(--ink-soft);
+  }
+  .row2{display:flex; gap:10px;}
+  .row2 .field{flex:1;}
+
+  .pct-note{
+    display:flex; align-items:center; justify-content:space-between;
+    margin-top:8px;
+    font-size:11.5px;
+    color:var(--ink-soft);
+  }
+  .pct-note b{color:var(--ink-2); font-weight:700;}
+
+  button.calc{
+    width:100%;
+    margin-top:18px;
+    padding:15px;
+    border:none;
+    border-radius:13px;
+    background:linear-gradient(160deg, var(--gold), var(--gold-dark));
+    color:var(--ink);
+    font-family:inherit;
+    font-size:15px;
+    font-weight:700;
+    cursor:pointer;
+    box-shadow:0 10px 24px -10px rgba(200,155,60,0.55);
+    transition:transform .12s ease;
+  }
+  button.calc:active{transform:scale(0.98);}
+
+  .result-title{
+    display:flex; align-items:baseline; justify-content:space-between;
+    margin-bottom:14px;
+  }
+  .result-title h2{
+    font-size:13px; font-weight:700; color:var(--ink-2); margin:0;
+  }
+  .result-title span{
+    font-size:11px; color:var(--ink-soft);
+  }
+  .ledger{
+    border-top:1px dashed var(--line);
+  }
+  .ledger-row{
+    display:flex; justify-content:space-between; align-items:baseline;
+    padding:12px 0;
+    border-bottom:1px dashed var(--line);
+    gap:12px;
+  }
+  .ledger-row .lbl{
+    font-size:12.5px; color:var(--ink-soft); font-weight:500;
+  }
+  .ledger-row .val{
+    font-size:14.5px; font-weight:700; color:var(--ink); white-space:nowrap;
+    font-variant-numeric: tabular-nums;
+  }
+  .ledger-row.total{
+    border-bottom:none;
+    padding-top:16px;
+  }
+  .ledger-row.total .lbl{color:var(--ink); font-weight:700; font-size:13.5px;}
+  .ledger-row.total .val{color:var(--good); font-size:18px;}
+  .ledger-row .val small{
+    font-size:10.5px; font-weight:600; color:var(--ink-soft); margin-right:3px;
+  }
+
+  .empty-state{
+    text-align:center;
+    padding:10px 6px 4px;
+    color:var(--ink-soft);
+    font-size:12.5px;
+    line-height:2;
+  }
+
+  footer{
+    text-align:center;
+    padding:18px 20px 4px;
+    font-size:10.5px;
+    color:rgba(247,245,241,0.4);
+  }
+
+  .install-tip{
+    margin:0 16px 4px;
+    background:rgba(247,245,241,0.08);
+    border:1px solid rgba(247,245,241,0.16);
+    border-radius:12px;
+    padding:11px 14px;
+    color:rgba(247,245,241,0.78);
+    font-size:11.5px;
+    line-height:1.9;
+    display:none;
+  }
+  .install-tip.show{display:block;}
+  .install-tip b{color:var(--paper);}
+
+  @media (min-width:480px){
+    .wrap{padding-top:32px;}
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <header class="top">
+    <div class="brand">
+      <div class="seal">
+        <svg viewBox="0 0 24 24" fill="none"><path d="M5 12.5 9.5 17 19 6.5" stroke="#10233B" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      </div>
+      <div>
+        <h1>محاسبه‌گر ضمانتنامه</h1>
+        <p>وثیقه، کارمزد و موجودی مورد نیاز صدور</p>
+      </div>
+    </div>
+  </header>
+
+  <main>
+    <div class="card">
+
+      <div class="field">
+        <label for="type">نوع ضمانتنامه</label>
+        <div class="select-wrap">
+          <select id="type"></select>
+        </div>
+      </div>
+
+      <div class="field">
+        <label for="amount">مبلغ ضمانتنامه</label>
+        <div class="amount-wrap">
+          <input id="amount" type="text" inputmode="numeric" placeholder="۰" />
+          <span class="suffix">ریال</span>
+        </div>
+      </div>
+
+      <div class="row2">
+        <div class="field">
+          <label for="months">مدت (ماه)</label>
+          <input id="months" type="number" inputmode="numeric" min="1" step="1" value="12" />
+        </div>
+        <div class="field">
+          <label for="deposit">سپرده نقدی (٪)</label>
+          <input id="deposit" type="number" inputmode="decimal" min="0" step="0.5" />
+        </div>
+      </div>
+      <div class="pct-note" id="pctNote"></div>
+
+      <div class="field" style="margin-top:16px;">
+        <label for="collateral">نوع وثیقه</label>
+        <div class="select-wrap">
+          <select id="collateral"></select>
+        </div>
+      </div>
+
+      <button class="calc" id="calcBtn">محاسبه</button>
+    </div>
+
+    <div class="card" id="resultCard" style="display:none;">
+      <div class="result-title">
+        <h2>خلاصه محاسبات</h2>
+        <span id="resSub"></span>
+      </div>
+      <div class="ledger">
+        <div class="ledger-row">
+          <div class="lbl">مبلغ سپرده نقدی</div>
+          <div class="val" id="rDeposit">—</div>
+        </div>
+        <div class="ledger-row">
+          <div class="lbl">مبلغ وثیقه</div>
+          <div class="val" id="rCollateral">—</div>
+        </div>
+        <div class="ledger-row">
+          <div class="lbl">کارمزد ضمانتنامه <small id="rFeeSpan"></small></div>
+          <div class="val" id="rFee">—</div>
+        </div>
+        <div class="ledger-row">
+          <div class="lbl">کارمزد تشویقی باجه</div>
+          <div class="val" id="rIncentive">—</div>
+        </div>
+        <div class="ledger-row total">
+          <div class="lbl">موجودی مورد نیاز برای صدور</div>
+          <div class="val" id="rRequired">—</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="card" id="placeholderCard">
+      <div class="empty-state">اطلاعات ضمانتنامه را وارد کنید و «محاسبه» را بزنید</div>
+    </div>
+  </main>
+
+  <div class="install-tip" id="installTip"></div>
+
+  <footer>برای استفاده آفلاین، این صفحه را به صفحه اصلی گوشی اضافه کنید</footer>
+</div>
+
+<script>
+/* -------- domain data -------- */
+const GUARANTEE_TYPES = [
+  { id:1, name:"شرکت در فرایند ارجاع کار (مناقصه)", minDeposit:0 },
+  { id:2, name:"انجام تعهدات (حسن اجرای تعهدات)",   minDeposit:10 },
+  { id:3, name:"پیش پرداخت",                         minDeposit:10 },
+  { id:4, name:"پیش پرداخت مشروط",                   minDeposit:10 },
+  { id:5, name:"استرداد کسور حسن انجام کار",          minDeposit:10 },
+  { id:6, name:"استرداد کسور حسن انجام کار مشروط",    minDeposit:10 },
+  { id:7, name:"تعهد پرداخت",                        minDeposit:20 },
+];
+
+const COLLATERAL_TYPES = [
+  { id:1, name:"سفته",           multiplier:1.30, annualRate:2.25 },
+  { id:2, name:"وثیقه ملکی",      multiplier:1.30, annualRate:1.50 },
+  { id:3, name:"سپرده بلندمدت",   multiplier:1.10, annualRate:0.50 },
+  { id:4, name:"سپرده جاری",      multiplier:1.00, annualRate:0.50 },
+];
+
+/* -------- helpers -------- */
+const fmt = n => Math.round(n).toLocaleString('en-US');
+const $ = id => document.getElementById(id);
+
+function fillSelect(sel, items){
+  sel.innerHTML = items.map(i => `<option value="${i.id}">${i.name}</option>`).join('');
+}
+fillSelect($('type'), GUARANTEE_TYPES);
+fillSelect($('collateral'), COLLATERAL_TYPES);
+
+function currentType(){ return GUARANTEE_TYPES.find(t => t.id == $('type').value); }
+function currentCollateral(){ return COLLATERAL_TYPES.find(c => c.id == $('collateral').value); }
+
+function syncDepositMin(){
+  const t = currentType();
+  $('deposit').min = t.minDeposit;
+  const cur = parseFloat($('deposit').value || '0');
+  if (isNaN(cur) || cur < t.minDeposit || $('deposit').dataset.touched !== '1') {
+    $('deposit').value = t.minDeposit;
+  }
+  $('pctNote').innerHTML = `حداقل مجاز برای این نوع: <b>${t.minDeposit}٪</b>`;
+}
+$('type').addEventListener('change', () => { $('deposit').dataset.touched='0'; syncDepositMin(); });
+$('deposit').addEventListener('input', () => { $('deposit').dataset.touched='1'; });
+$('deposit').addEventListener('blur', () => {
+  const t = currentType();
+  let v = parseFloat($('deposit').value || '0');
+  if (isNaN(v) || v < t.minDeposit) v = t.minDeposit;
+  $('deposit').value = v;
+});
+syncDepositMin();
+
+/* amount field: live thousands separators */
+$('amount').addEventListener('input', (e)=>{
+  const raw = e.target.value.replace(/[^\d]/g,'');
+  e.target.value = raw ? Number(raw).toLocaleString('en-US') : '';
+});
+
+function rawAmount(){
+  return parseFloat(($('amount').value || '0').replace(/,/g,'')) || 0;
+}
+
+/* -------- calculation -------- */
+function calculate(){
+  const amount = rawAmount();
+  const months = Math.max(1, parseFloat($('months').value || '0') || 0);
+  const depositPct = Math.max(0, parseFloat($('deposit').value || '0') || 0);
+  const col = currentCollateral();
+
+  const depositAmount = amount * depositPct / 100;
+  const remaining = Math.max(0, amount - depositAmount);
+
+  const collateralAmount = remaining * col.multiplier;
+  const annualFee = remaining * col.annualRate / 100;
+  const fee = annualFee * (months / 12);
+  const incentive = fee * 0.30;
+  const required = fee + depositAmount;
+
+  $('rDeposit').textContent = fmt(depositAmount);
+  $('rCollateral').textContent = fmt(collateralAmount);
+  $('rFee').textContent = fmt(fee);
+  $('rFeeSpan').textContent = `(${months} ماه)`;
+  $('rIncentive').textContent = fmt(incentive);
+  $('rRequired').textContent = fmt(required);
+  $('resSub').textContent = amount ? `مبلغ ضمانتنامه: ${fmt(amount)} ریال` : '';
+
+  $('resultCard').style.display = 'block';
+  $('placeholderCard').style.display = 'none';
+}
+
+$('calcBtn').addEventListener('click', calculate);
+
+/* -------- install hint (iOS Safari lacks beforeinstallprompt) -------- */
+(function(){
+  const isStandalone = window.matchMedia('(display-mode: standalone)').matches || window.navigator.standalone === true;
+  const isIOS = /iphone|ipad|ipod/i.test(navigator.userAgent);
+  const tip = $('installTip');
+  if (isStandalone) return;
+  if (isIOS) {
+    tip.innerHTML = 'برای نصب: دکمه <b>Share</b> را بزنید سپس <b>Add to Home Screen</b> را انتخاب کنید.';
+    tip.classList.add('show');
+  } else {
+    window.addEventListener('beforeinstallprompt', (e)=>{
+      tip.innerHTML = 'برای نصب روی گوشی، از منوی مرورگر گزینه <b>Add to Home screen / نصب برنامه</b> را بزنید.';
+      tip.classList.add('show');
+    });
+  }
+})();
+
+/* -------- service worker -------- */
+if ('serviceWorker' in navigator) {
+  window.addEventListener('load', () => {
+    navigator.serviceWorker.register('service-worker.js').catch(()=>{});
+  });
+}
+</script>
+</body>
+</html>
